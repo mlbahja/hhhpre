@@ -1,0 +1,93 @@
+<div class="edit-container">
+  <div class="edit-header">
+    <h1>Edit Profile</h1>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="edit-form">
+    <div class="form-group">
+      <label for="fullName">Full Name</label>
+      <input
+        type="text"
+        id="fullName"
+        [(ngModel)]="fullName"
+        name="fullName"
+        placeholder="Enter your full name"
+        class="form-control"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="bio">Bio</label>
+      <textarea
+        id="bio"
+        [(ngModel)]="bio"
+        name="bio"
+        placeholder="Tell us about yourself..."
+        rows="4"
+        class="form-control"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="avatar">Avatar URL</label>
+      <input
+        type="text"
+        id="avatar"
+        [(ngModel)]="avatar"
+        name="avatar"
+        placeholder="https://example.com/avatar.jpg"
+        class="form-control"
+      />
+      <small class="form-hint">Enter a URL to an image for your avatar</small>
+    </div>
+
+    <div class="form-group">
+      <label for="profilePictureUrl">Profile Picture</label>
+      <div class="file-upload-section">
+        <label class="file-input-label">
+          <input
+            type="file"
+            (change)="onProfilePictureSelected($event)"
+            accept="image/*"
+            class="file-input"
+          />
+          <span class="file-input-text">
+            {{ selectedProfilePicture ? selectedProfilePicture.name : 'Choose a profile picture from your device' }}
+          </span>
+        </label>
+        <button type="button" class="btn btn-upload" *ngIf="selectedProfilePicture" (click)="uploadProfilePicture()">
+          {{ uploading ? 'Uploading...' : 'Upload Now' }}
+        </button>
+      </div>
+      <small class="form-hint">Or enter a URL below:</small>
+      <input
+        type="text"
+        id="profilePictureUrl"
+        [(ngModel)]="profilePictureUrl"
+        name="profilePictureUrl"
+        placeholder="https://example.com/profile.jpg"
+        class="form-control"
+      />
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-section">
+      <label>Preview:</label>
+      <img
+        [src]="getProfilePictureUrl()"
+        alt="Preview"
+        class="preview-image"
+      />
+      <small class="form-hint">This is how your avatar will appear</small>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        {{ loading ? 'Saving...' : 'Save Changes' }}
+      </button>
+      <button type="button" (click)="cancel()" class="btn btn-secondary">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

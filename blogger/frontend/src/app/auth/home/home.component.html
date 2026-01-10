@@ -1,0 +1,292 @@
+<header class="site-header">
+  <div class="header-container">
+    <div class="logo">
+      <h1 routerLink="/home">My Blog</h1>
+    </div>
+    <nav class="main-nav">
+      <a routerLink="/home" routerLinkActive="active" class="nav-link">Home</a>
+      <a routerLink="/users" routerLinkActive="active" class="nav-link">Users</a>
+      <a routerLink="/chat" routerLinkActive="active" class="nav-link">Chat</a>
+      <a routerLink="/profile" routerLinkActive="active" class="nav-link">Profile</a>
+      <a routerLink="/admin" routerLinkActive="active" class="nav-link" *ngIf="isAdmin()"
+        >Admin Panel</a
+      >
+    </nav>
+    <div class="header-actions">
+   
+      <div class="notification-bell" routerLink="/notifications" title="Notifications">
+        <span class="bell-icon">🔔</span>
+        <span class="notification-badge" *ngIf="unreadNotificationCount > 0">
+          {{ unreadNotificationCount > 99 ? '99+' : unreadNotificationCount }}
+        </span>
+      </div>
+      <span class="user-greeting">Hello, {{ username }}</span>
+      <button class="logout-button" (click)="logout()">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  <div class="container">
+    <section class="featured-section" *ngIf="posts.length > 0">
+      <article class="featured-post">
+        <div class="featured-content">
+          <span class="featured-label">Featured Story</span>
+          <h2 class="featured-title">{{ posts[0].title }}</h2>
+          <p class="featured-excerpt">
+            {{ posts[0].content | slice: 0 : 200 }}{{ posts[0].content.length > 200 ? '...' : '' }}
+          </p>
+          <div class="post-media" *ngIf="posts[0].mediaUrl">
+            <img
+              *ngIf="posts[0].mediaType === 'image' || posts[0].mediaType === 'gif'"
+              [src]="'http://localhost:8080' + posts[0].mediaUrl"
+              [alt]="posts[0].title"
+              class="post-image"
+            />
+            <video
+              *ngIf="posts[0].mediaType === 'video'"
+              [src]="'http://localhost:8080' + posts[0].mediaUrl"
+              controls
+              class="post-video"
+            ></video>
+          </div>
+          <div class="post-meta">
+            <span class="author">By {{ posts[0].author?.username || 'Unknown' }}</span>
+            <span class="separator">•</span>
+            <span class="date">{{ posts[0].createdAt | date: 'MMM d, yyyy' }}</span>
+            <span class="separator" *ngIf="posts[0].comments">•</span>
+            <span class="comments-count" *ngIf="posts[0].comments"
+              >{{ posts[0].comments.length }} Comments</span
+            >
+            <span class="separator">•</span>
+            <button
+              class="like-btn"
+              (click)="toggleLike(posts[0])"
+              [class.liked]="posts[0].isLiked"
+            >
+              <span class="like-icon">{{ posts[0].isLiked ? '❤️' : '🤍' }}</span>
+              <span class="like-count">{{ posts[0].likeCount || 0 }}</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="posts-section">
+      <div class="posts-header">
+        <h2 class="section-title">Recent Stories</h2>
+        <button class="filter-toggle-btn" (click)="toggleFeedFilter()">
+          {{ showFollowedOnly ? 'Show All Posts' : 'Show Followed Only' }}
+        </button>
+      </div>
+
+      <div class="posts-grid">
+        <article class="post-card" *ngFor="let post of posts.slice(1); let i = index">
+          <div class="post-card-content">
+            <h3 class="post-card-title">{{ post.title }}</h3>
+            <p class="post-card-excerpt">
+              {{ post.content | slice: 0 : 150 }}{{ post.content.length > 150 ? '...' : '' }}
+            </p>
+            <div class="post-media" *ngIf="post.mediaUrl">
+              <img
+                *ngIf="post.mediaType === 'image' || post.mediaType === 'gif'"
+                [src]="'http://localhost:8080' + post.mediaUrl"
+                [alt]="post.title"
+                class="post-image"
+              />
+              <video
+                *ngIf="post.mediaType === 'video'"
+                [src]="'http://localhost:8080' + post.mediaUrl"
+                controls
+                class="post-video"
+              ></video>
+            </div>
+            <div class="post-card-meta">
+              <span class="author">{{ post.author?.username || 'Unknown' }}</span>
+              <span class="separator">•</span>
+              <span class="date">{{ post.createdAt | date: 'MMM d' }}</span>
+
+              <button
+                class="open-post-btn"
+                (click)="viewPostDetails(post.id)"
+                title="Open in new tab"
+              >
+                ↗️
+              </button>
+              <button
+                *ngIf="canDeletePost(post)"
+                class="delete-post-btn"
+                (click)="confirmDelete(post.id, post.title)"
+                title="Delete this post"
+              >
+                🗑️
+              </button>
+              <button
+                *ngIf="!isMyPost(post)"
+                class="report-post-btn"
+                (click)="openReportDialog(post)"
+                title="Report this post"
+              >
+                🚩
+              </button>
+              <span class="separator">•</span>
+              <button class="like-btn" (click)="toggleLike(post)" [class.liked]="post.isLiked">
+                <span class="like-icon">{{ post.isLiked ? '❤️' : '🤍' }}</span>
+                <span class="like-count">{{ post.likeCount || 0 }}</span>
+              </button>
+            </div>
+
+            <button class="read-more-btn" (click)="expandPost(i + 1)">
+              {{ expandedPosts.has(i + 1) ? 'Show Less' : 'Read More' }}
+            </button>
+          </div>
+
+          <div class="post-expanded" *ngIf="expandedPosts.has(i + 1)">
+            <div class="post-full-content">
+              <p>{{ post.content }}</p>
+            </div>
+
+            <div class="comments-section">
+              <h4 class="comments-title">Comments ({{ post.comments?.length || 0 }})</h4>
+              <div class="comments-list" *ngIf="post.comments && post.comments.length > 0">
+                <div class="comment" *ngFor="let comment of post.comments">
+                  <div class="comment-header">
+                    <span class="comment-author">{{
+                      comment.author?.username || 'Anonymous'
+                    }}</span>
+                    <span class="comment-date">{{ comment.createdAt | date: 'MMM d, yyyy' }}</span>
+                  </div>
+                  <p class="comment-text">{{ comment.content }}</p>
+                </div>
+              </div>
+              <div class="no-comments" *ngIf="!post.comments || post.comments.length === 0">
+                <p>Be the first to comment on this post.</p>
+              </div>
+
+              <form
+                class="comment-form"
+                (ngSubmit)="addComment(post.id, commentText.value); commentText.value = ''"
+              >
+                <div class="comment-input-wrapper">
+                  <input
+                    #commentText
+                    type="text"
+                    placeholder="Share your thoughts..."
+                    class="comment-input"
+                    required
+                  />
+                  <button type="submit" class="comment-submit-btn">Post Comment</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="empty-state" *ngIf="posts.length === 0">
+        <div class="empty-state-content">
+          <h3>No posts yet</h3>
+          <p>Be the first to share your story!</p>
+          <button class="btn btn-primary" (click)="showCreateForm = true">
+            Create Your First Post
+          </button>
+        </div>
+      </div>
+
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+        <span>Page {{ currentPage }}</span>
+        <button (click)="nextPage()" [disabled]="currentPage * pageSize >= totalPosts">Next</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="showCreateForm" (click)="showCreateForm = false"></div>
+  <section class="create-post-modal" *ngIf="showCreateForm">
+    <div class="section-header">
+      <h2 class="section-title">Share Your Story</h2>
+      <button class="close-form-btn" (click)="showCreateForm = false">&times;</button>
+    </div>
+    <form class="post-form" (ngSubmit)="createPost()">
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="newPost.title"
+          name="title"
+          placeholder="Enter your post title..."
+          class="form-input title-input"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <textarea
+          [(ngModel)]="newPost.content"
+          name="content"
+          placeholder="Tell your story..."
+          class="form-textarea"
+          rows="6"
+          required
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label class="file-input-label">
+          <input
+            type="file"
+            (change)="onFileSelected($event)"
+            accept="image/*,video/*,.gif"
+            class="file-input"
+          />
+          <span class="file-input-text">{{
+            selectedFile ? selectedFile.name : 'Add Image, Video, or GIF (Optional)'
+          }}</span>
+        </label>
+        <button type="button" class="btn btn-remove" *ngIf="selectedFile" (click)="removeFile()">
+          Remove File
+        </button>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="uploading">
+          {{ uploading ? 'Uploading...' : 'Publish Post' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="showCreateForm = false">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <button class="floating-create-btn" *ngIf="!showCreateForm" (click)="showCreateForm = true">
+    <span class="plus-icon">+</span> New Post
+  </button>
+</main>
+
+<div class="modal-backdrop" *ngIf="showReportDialog" (click)="closeReportDialog()"></div>
+<div class="report-modal" *ngIf="showReportDialog">
+  <div class="modal-header">
+    <h3>Report Post</h3>
+    <button class="close-btn" (click)="closeReportDialog()">&times;</button>
+  </div>
+  <div class="modal-body">
+    <p class="report-post-title">Reporting: "{{ reportingPost?.title }}"</p>
+    <label for="reportReason">Reason for reporting:</label>
+    <textarea
+      id="reportReason"
+      [(ngModel)]="reportReason"
+      placeholder="Please describe why you're reporting this post..."
+      rows="5"
+      class="report-textarea"
+    ></textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" (click)="submitReport()" [disabled]="!reportReason.trim()">
+      Submit Report
+    </button>
+    <button class="btn btn-secondary" (click)="closeReportDialog()">Cancel</button>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2025 My Blog. All rights reserved.</p>
+  </div>
+</footer>
