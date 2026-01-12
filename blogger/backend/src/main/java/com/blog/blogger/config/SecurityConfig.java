@@ -66,6 +66,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .requestMatchers(HttpMethod.GET, "/auth/reports/my").authenticated()
             .requestMatchers("/auth/reports/admin/**").hasRole("ADMIN")
             // Notification endpoints - require authentication
+            .requestMatchers("/auth/admin/**").hasRole("ADMIN")
+
             .requestMatchers("/auth/notifications/**").authenticated()
             // All other requests require authentication
             .anyRequest().authenticated()

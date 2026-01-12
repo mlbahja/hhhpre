@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 // import com.blog.blogger.entity.User;
 // import com.blog.blogger.entity.Role;
 import com.blog.blogger.models.Role;
-import com.blog.blogger.models.User;  
+import com.blog.blogger.models.User;  // ← ADD THIS IMPORT
 import com.blog.blogger.repository.UserRepository;
 
 @Configuration

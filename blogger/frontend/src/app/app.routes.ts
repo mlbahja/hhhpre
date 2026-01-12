@@ -21,6 +21,8 @@ import { adminGuard } from './core/guards/admin.guard';
 import { AuthService } from './core/services/auth.service';
 import { PostDetailComponent } from './auth/post-detail/post-detail.component';
 
+import { AdminPostsComponent } from './admin/admin-posts/admin-posts.component';
+
 
 export const routes: Routes = [
   
@@ -100,6 +102,12 @@ export const routes: Routes = [
     component: AdminReportsComponent,
     canActivate: [adminGuard],
   },
+  {
+  path: 'admin/posts',
+  component: AdminPostsComponent,
+  canActivate: [adminGuard], // hakda gha t7miha mn users li ma ADMIN
+},
+
   { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
   { path: 'auth/home', redirectTo: 'home', pathMatch: 'full' },
