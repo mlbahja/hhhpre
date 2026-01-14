@@ -25,7 +25,7 @@ import { AdminPostsComponent } from './admin/admin-posts/admin-posts.component';
 
 
 export const routes: Routes = [
-  
+
   {
     path: '',
     canActivate: [
@@ -33,7 +33,7 @@ export const routes: Routes = [
         const authService = inject(AuthService);
         const router = inject(Router);
 
-        
+
         return authService.isLoggedIn()
           ? router.createUrlTree(['/home'])
           : router.createUrlTree(['/login']);
@@ -66,7 +66,7 @@ export const routes: Routes = [
     component: UsersComponent,
     canActivate: [authGuard],
   },
-  
+
   {
     path: 'profile',
     component: ProfileComponent,
@@ -103,16 +103,18 @@ export const routes: Routes = [
     canActivate: [adminGuard],
   },
   {
-  path: 'admin/posts',
-  component: AdminPostsComponent,
-  canActivate: [adminGuard], // hakda gha t7miha mn users li ma ADMIN
-},
+    path: 'admin/posts',
+    component: AdminPostsComponent,
+    canActivate: [adminGuard], // hakda gha t7miha mn users li ma ADMIN
+  },
 
   { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
   { path: 'auth/home', redirectTo: 'home', pathMatch: 'full' },
-
+  //this is the admin 
   
+
+
   {
     path: 'unauthorized',
     component: UnauthorizedComponent,

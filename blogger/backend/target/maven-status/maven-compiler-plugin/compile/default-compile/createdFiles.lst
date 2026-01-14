@@ -34,7 +34,6 @@ com/blog/blogger/repository/CommentLikeRepository.class
 com/blog/blogger/repository/SubscriptionRepository.class
 com/blog/blogger/models/Subscription$SubscriptionBuilder.class
 com/blog/blogger/repository/UserRepository.class
-com/blog/blogger/service/CommentService.class
 com/blog/blogger/dto/AuthResponse.class
 com/blog/blogger/models/Post$PostBuilder.class
 com/blog/blogger/models/Response$ResponseBuilder.class

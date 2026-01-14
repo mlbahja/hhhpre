@@ -94,7 +94,7 @@ public class AdminService {
     }
 
     public void deletePost(Long postId) {
-        postRepository.deleteById(postId);
+        postService.deletePost(postId);
     }
 
     public void hidePost(Long postId) {

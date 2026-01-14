@@ -4,6 +4,7 @@ import { ToastService } from '../../core/services/toast.service';
 import { Post } from '../../core/models/post.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 
 
@@ -12,7 +13,7 @@ import { FormsModule } from '@angular/forms';
     templateUrl: './admin-posts.component.html',
     styleUrls: ['./admin-posts.component.css'],
     standalone: true, // <-- hna
-    imports: [CommonModule, FormsModule]
+    imports: [CommonModule, FormsModule, RouterModule] 
 })
 
 export class AdminPostsComponent implements OnInit {

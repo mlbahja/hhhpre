@@ -14,11 +14,9 @@ import com.blog.blogger.dto.UpdateProfileDTO;
 import com.blog.blogger.dto.UserProfileDTO;
 import com.blog.blogger.models.Role;
 import com.blog.blogger.models.User;
+import com.blog.blogger.repositories.NotificationRepository;
 import com.blog.blogger.repository.CommentLikeRepository;
 import com.blog.blogger.repository.CommentRepository;
-import com.blog.blogger.repositories.NotificationRepository;
-
-// Fixed import
 import com.blog.blogger.repository.PostLikeRepository;
 import com.blog.blogger.repository.PostRepository;
 import com.blog.blogger.repository.SubscriptionRepository;
@@ -130,6 +128,7 @@ public class UserService {
             user.setAvatar(avatar.isEmpty() ? null : avatar);
         }
         if (dto.getProfilePictureUrl() != null) {
+            
             String profilePicUrl = dto.getProfilePictureUrl().trim();
             user.setProfilePictureUrl(profilePicUrl.isEmpty() ? null : profilePicUrl);
         }

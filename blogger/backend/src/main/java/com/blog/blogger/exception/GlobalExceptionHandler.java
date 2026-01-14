@@ -9,6 +9,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 /**
  * GlobalExceptionHandler - Handles exceptions across the whole application
@@ -58,5 +60,27 @@ public class GlobalExceptionHandler {
         response.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    /**
+     * Handle file upload size limits
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleMaxSizeException(MaxUploadSizeExceededException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "error");
+        response.put("message", "File is too large");
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(response);
+    }
+
+    /**
+     * Handle multipart parsing errors
+     */
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<Map<String, Object>> handleMultipartException(MultipartException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "error");
+        response.put("message", "Invalid multipart request");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
