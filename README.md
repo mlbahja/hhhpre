@@ -1,6 +1,7 @@
 
+# HOW TO RUN MY APP 
 
-
+===> `RuN THE Scriipt`  
 
 # Principles Used in This App
 

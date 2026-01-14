@@ -19,6 +19,7 @@ import com.blog.blogger.repository.CommentLikeRepository;
 import com.blog.blogger.repository.CommentRepository;
 import com.blog.blogger.repository.PostLikeRepository;
 import com.blog.blogger.repository.PostRepository;
+import com.blog.blogger.repository.ReportRepository;
 
 import jakarta.validation.ValidationException;
 
@@ -37,6 +38,9 @@ public class PostService {
 
     @Autowired
     private CommentLikeRepository commentLikeRepository;
+
+    @Autowired
+    private ReportRepository reportRepository;
 
     @Autowired
     private SubscriptionService subscriptionService;
@@ -104,6 +108,9 @@ public class PostService {
         for (Comment comment : comments) {
             commentLikeRepository.deleteByComment(comment);
         }
+        commentRepository.deleteAll(comments);
+
+        reportRepository.deleteByPost(post);
 
         postRepository.delete(post);
     }

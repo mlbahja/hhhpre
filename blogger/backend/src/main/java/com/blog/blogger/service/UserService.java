@@ -19,6 +19,7 @@ import com.blog.blogger.repository.CommentLikeRepository;
 import com.blog.blogger.repository.CommentRepository;
 import com.blog.blogger.repository.PostLikeRepository;
 import com.blog.blogger.repository.PostRepository;
+import com.blog.blogger.repository.ReportRepository;
 import com.blog.blogger.repository.SubscriptionRepository;
 import com.blog.blogger.repository.UserRepository;
 
@@ -33,6 +34,7 @@ public class UserService {
     private final CommentLikeRepository commentLikeRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final NotificationRepository notificationRepository;
+    private final ReportRepository reportRepository;
 
     public UserService(
             UserRepository userRepository,
@@ -42,7 +44,8 @@ public class UserService {
             PostLikeRepository postLikeRepository,
             CommentLikeRepository commentLikeRepository,
             SubscriptionRepository subscriptionRepository,
-            NotificationRepository notificationRepository) { // Fixed - only once!
+            NotificationRepository notificationRepository,
+            ReportRepository reportRepository) { // Fixed - only once!
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.postRepository = postRepository;
@@ -50,7 +53,8 @@ public class UserService {
         this.postLikeRepository = postLikeRepository;
         this.commentLikeRepository = commentLikeRepository;
         this.subscriptionRepository = subscriptionRepository;
-        this.notificationRepository = notificationRepository; 
+        this.notificationRepository = notificationRepository;
+        this.reportRepository = reportRepository;
     }
   
 
@@ -199,15 +203,26 @@ public class UserService {
         // messageRepository.deleteAll(receivedMessages);
 
         notificationRepository.deleteByUser(user);
-        
+
+        List<com.blog.blogger.models.Post> posts = postRepository.findByAuthor(user);
+        for (com.blog.blogger.models.Post post : posts) {
+            postLikeRepository.deleteByPost(post);
+
+            List<com.blog.blogger.models.Comment> postComments = commentRepository.findByPost(post);
+            for (com.blog.blogger.models.Comment comment : postComments) {
+                commentLikeRepository.deleteByComment(comment);
+            }
+            commentRepository.deleteAll(postComments);
+            reportRepository.deleteByPost(post);
+        }
+        postRepository.deleteAll(posts);
+
+        reportRepository.deleteByReporter(user);
+
         List<com.blog.blogger.models.Comment> comments = commentRepository.findAll().stream()
                 .filter(comment -> comment.getAuthor().getId().equals(id))
                 .collect(Collectors.toList());
         commentRepository.deleteAll(comments);
-
-      
-        List<com.blog.blogger.models.Post> posts = postRepository.findByAuthor(user);
-        postRepository.deleteAll(posts);
 
         
         userRepository.delete(user);

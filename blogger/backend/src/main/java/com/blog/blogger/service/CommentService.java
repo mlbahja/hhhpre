@@ -33,6 +33,10 @@ public class CommentService {
         return commentRepository.findById(commentId);
     }
 
+    public Comment addComment(Comment comment) {
+        return commentRepository.save(comment);
+    }
+
     public Page<Comment> getCommentsByPost(Post post, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return commentRepository.findByPost(post, pageable);

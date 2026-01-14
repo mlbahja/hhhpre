@@ -172,11 +172,12 @@ public class PostController {
             Post post = postService.getPostById(id)
                     .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
 
-            // Check if user owns the post
+            // Check if user owns the post or is admin
             boolean isOwner = post.getAuthor().getId().equals(currentUser.getId());
+            boolean isAdmin = currentUser.getRole().name().equals("ADMIN");
 
             //should edite just if you are the owner of the post 
-            if (!isOwner) {
+            if (!isOwner && !isAdmin) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of(
                             "error", "Forbidden",
@@ -261,8 +262,7 @@ public ResponseEntity<?> deletePost(@PathVariable Long id,
                 .post(post)
                 .build();
 
-        post.addComment(comment);
-        postService.createPost(post);
+        commentService.addComment(comment);
 
         // Notify post author about the new comment
         notificationService.notifyUserAboutComment(post, currentUser);

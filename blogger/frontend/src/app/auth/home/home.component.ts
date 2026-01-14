@@ -354,7 +354,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           if (error.status === 500) {
             errorMsg = 'Server error. Please try again later';
           } else if (error.status === 413) {
-            errorMsg = 'File is too large. Maximum size is 10MB';
+            errorMsg = 'File is too large. Maximum size is 50MB';
           } else if (error.status === 415) {
             errorMsg = 'Unsupported file type';
           } else if (error.error?.message) {
